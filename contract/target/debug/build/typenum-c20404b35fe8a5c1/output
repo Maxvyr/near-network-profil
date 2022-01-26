@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/Users/maxvy/Documents/App/Near/near-network-profil/contract/target/debug/build/typenum-c20404b35fe8a5c1/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/Users/maxvy/Documents/App/Near/near-network-profil/contract/target/debug/build/typenum-c20404b35fe8a5c1/out/op.rs

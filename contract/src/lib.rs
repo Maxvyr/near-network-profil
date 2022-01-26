@@ -22,42 +22,74 @@ setup_alloc!();
 // Note: the names of the structs are not important when calling the smart contract, but the function names are
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
-pub struct Welcome {
+pub struct Profil {
     records: LookupMap<String, String>,
+    title: String,
+    desc: String,
+    img: String,
 }
 
-impl Default for Welcome {
+impl Default for Profil {
   fn default() -> Self {
     Self {
       records: LookupMap::new(b"a".to_vec()),
+      title: String::from("No Title"),
+      desc: String::from("No Desc"),
+      img: String::from("No Img"),
     }
   }
 }
 
 #[near_bindgen]
-impl Welcome {
-    pub fn set_greeting(&mut self, message: String) {
-        let account_id = env::signer_account_id();
-
-        // Use env::log to record logs permanently to the blockchain!
-        env::log(format!("Saving greeting '{}' for account '{}'", message, account_id,).as_bytes());
-
-        self.records.insert(&account_id, &message);
+impl Profil {
+    pub fn get_title(&self, account_id: String) -> String {
+        match self.records.get(&account_id) {
+            Some(title) => title,
+            None => "No Title".to_string(),
+        }
     }
 
-    // `match` is similar to `switch` in other languages; here we use it to default to "Hello" if
-    // self.records.get(&account_id) is not yet defined.
-    // Learn more: https://doc.rust-lang.org/book/ch06-02-match.html#matching-with-optiont
-    pub fn get_greeting(&self, account_id: String) -> String {
+    pub fn get_desc(&self, account_id: String) -> String {
         match self.records.get(&account_id) {
-            Some(greeting) => greeting,
-            None => "Hello".to_string(),
+            Some(desc) => desc,
+            None => "No Desc".to_string(),
         }
+    }
+
+
+    pub fn get_img(&self, account_id: String) -> String {
+        match self.records.get(&account_id) {
+            Some(img) => img,
+            None => "No Img".to_string(),
+        }
+    }
+    
+    pub fn set_title(&mut self, message: String) {
+        let account_id = env::signer_account_id();
+        let title = format!("{} for account {}", message, account_id);
+        env::log(title.as_bytes());
+
+        self.records.insert(&account_id, &title);
+    }
+
+    pub fn set_desc(&mut self, message: String) {
+        let account_id = env::signer_account_id();
+        let desc = format!("{} for account {}", message, account_id);
+        env::log(desc.as_bytes());
+
+        self.records.insert(&account_id, &desc);
+    }
+
+    pub fn set_img(&mut self, image_link: String) {
+        let account_id = env::signer_account_id();
+        env::log(image_link.as_bytes());
+
+        self.records.insert(&account_id, &image_link);
     }
 }
 
 /*
- * The rest of this file holds the inline tests for the code above
+ * TEST
  * Learn more about Rust tests: https://doc.rust-lang.org/book/ch11-01-writing-tests.html
  *
  * To run from contract directory:
@@ -96,26 +128,73 @@ mod tests {
     }
 
     #[test]
-    fn set_then_get_greeting() {
+    fn set_then_get_title() {
         let context = get_context(vec![], false);
         testing_env!(context);
-        let mut contract = Welcome::default();
-        contract.set_greeting("howdy".to_string());
+        let mut contract = Profil::default();
+        contract.set_title("Title".to_string());
         assert_eq!(
-            "howdy".to_string(),
-            contract.get_greeting("bob_near".to_string())
+            "Title for account bob_near".to_string(),
+            contract.get_title("bob_near".to_string())
         );
     }
 
     #[test]
-    fn get_default_greeting() {
+    fn get_default_title() {
         let context = get_context(vec![], true);
         testing_env!(context);
-        let contract = Welcome::default();
-        // this test did not call set_greeting so should return the default "Hello" greeting
+        let contract = Profil::default();
         assert_eq!(
-            "Hello".to_string(),
-            contract.get_greeting("francis.near".to_string())
+            "No Title".to_string(),
+            contract.get_title("francis.near".to_string())
         );
     }
+
+    #[test]
+    fn set_then_get_desc() {
+        let context = get_context(vec![], false);
+        testing_env!(context);
+        let mut contract = Profil::default();
+        contract.set_desc("A Desc".to_string());
+        assert_eq!(
+            "A Desc for account bob_near".to_string(),
+            contract.get_desc("bob_near".to_string())
+        );
+    }
+
+    #[test]
+    fn get_default_desc() {
+        let context = get_context(vec![], true);
+        testing_env!(context);
+        let contract = Profil::default();
+        assert_eq!(
+            "No Desc".to_string(),
+            contract.get_desc("francis.near".to_string())
+        );
+    }
+
+
+    #[test]
+    fn set_then_get_img() {
+        let context = get_context(vec![], false);
+        testing_env!(context);
+        let mut contract = Profil::default();
+        contract.set_img("https://ipfs.fleek.co/ipfs/bafkreifui6q2p7yuk5kmprajbqd6a7xljkhl4mh6tcjalxnjquf7zs77ve".to_string());
+        assert_eq!(
+            "https://ipfs.fleek.co/ipfs/bafkreifui6q2p7yuk5kmprajbqd6a7xljkhl4mh6tcjalxnjquf7zs77ve".to_string(),
+            contract.get_img("bob_near".to_string())
+        );
+    }
+
+    #[test]
+    fn get_default_img() {
+        let context = get_context(vec![], true);
+        testing_env!(context);
+        let contract = Profil::default();
+        assert_eq!(
+            "No Img".to_string(),
+            contract.get_img("francis.near".to_string())
+        );
+    }
+
 }
