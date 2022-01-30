@@ -4,58 +4,25 @@
     <main>
       <h1>
         <label
-          for="greeting"
+          for="Title"
           style="color: var(--secondary);border-bottom: 2px solid var(--secondary);"
-        >{{ savedGreeting }}</label>
+        >{{ savedTitle }}</label>
         {{ accountId }}
       </h1>
-      <form v-on:submit.prevent="saveGreeting">
+      <form v-on:submit.prevent="saveTitle">
         <fieldset ref="fieldset">
           <label
-            for="greeting"
+            for="title"
             style="display:block; color:var(--gray);margin-bottom:0.5em;"
-          >Change greeting</label>
+          >Change Title</label>
           <div style="display:flex">
-            <input v-model="newGreeting" autocomplete="off" id="greeting" style="flex:1" />
+            <input v-model="newTitle" autocomplete="off" id="title" style="flex:1" />
             <button id="save" style="border-radius:0 5px 5px 0">Save</button>
           </div>
         </fieldset>
       </form>
       <p>Look at that! A Hello World app! This greeting is stored on the NEAR blockchain. Check it out:</p>
-      <ol>
-        <li>
-          Look in
-          <code>src/App.vue</code> and
-          <code>src/utils.js</code>
-          - you'll see
-          <code>getGreeting</code>
-          and
-          <code>setGreeting</code> being called on
-          <code>contract</code>. What's this?
-        </li>
-        <li>
-          Ultimately, this
-          <code>contract</code> code is defined in
-          <code>assembly/main.ts</code>
-          - this is the source code for your
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href="https://docs.near.org/docs/develop/contracts/overview"
-          >smart contract</a>.
-        </li>
-        <li>
-          When you run
-          <code>npm run dev</code> or
-          <code>yarn dev</code>, the code in
-          <code>assembly/main.ts</code>
-          gets deployed to the NEAR testnet. You can see how this happens by looking in
-          <code>package.json</code>
-          at the
-          <code>scripts</code> section to find the
-          <code>dev</code> command.
-        </li>
-      </ol>
+       
       <hr />
       <p>
         To keep learning, check out
@@ -76,7 +43,7 @@
       v-show="notificationVisible"
       ref="notification"
       :networkId="networkId"
-      :msg="'called method: setGreeting'"
+      :msg="'called method: setTitle'"
       :contractId="contractId"
       :visible="false"
     />
@@ -93,7 +60,7 @@ export default {
 
   beforeMount() {
     if (this.isSignedIn) {
-      this.retrieveSavedGreeting()
+      this.retrieveSavedTitle()
     }
   },
 
@@ -103,8 +70,8 @@ export default {
 
   data: function () {
     return {
-      savedGreeting: "",
-      newGreeting: "",
+      savedTitle: "",
+      newTitle: "",
       notificationVisible: false,
     }
   },
@@ -125,17 +92,18 @@ export default {
   },
 
   methods: {
-    retrieveSavedGreeting() {
-      //retrieve greeting
+    retrieveSavedTitle() {
+      //retrieve profilx
       window.contract
-        .getGreeting({ accountId: window.accountId })
-        .then((greetingFromContract) => {
-          this.savedGreeting = greetingFromContract
-          this.newGreeting = greetingFromContract
+        .get_title({ accountId: window.accountId })
+        .then((titleFromContract) => {
+          this.savedTitle = titleFromContract
+          this.newTitle = titleFromContract
         })
     },
 
-    saveGreeting: async function (event) {
+    saveTitle: async function (event) {
+      console.log(event);
       // fired on form submit button used to update the greeting
 
       // disable the form while the value gets updated on-chain
@@ -144,9 +112,9 @@ export default {
       try {
         
         // make an update call to the smart contract
-        await window.contract.setGreeting({
+        await window.contract.set_title({
           // pass the new greeting
-          message: this.newGreeting,
+          message: this.newTitle,
         })
       } catch (e) {
         alert(
@@ -161,7 +129,7 @@ export default {
       }
 
       // update savedGreeting with persisted value
-      this.savedGreeting = this.newGreeting
+      this.savedTitle = this.newTitle
 
       this.notificationVisible = true //show new notification
 
