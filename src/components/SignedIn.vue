@@ -93,10 +93,12 @@ export default {
 
   methods: {
     retrieveSavedTitle() {
+      console.log("retrieveSavedTitle",window.accountId)      
       //retrieve profilx
       window.contract
-        .get_title({ accountId: window.accountId })
+        .get_title({ account_id: window.accountId })
         .then((titleFromContract) => {
+          console.log("retrieveSavedTitle 2",titleFromContract)      
           this.savedTitle = titleFromContract
           this.newTitle = titleFromContract
         })
